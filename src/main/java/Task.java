@@ -6,22 +6,24 @@ public class Task {
         this.description = description;
         this.isDone = false;
     }
+
     private String getStatusIcon() {
         return (isDone ? "X" : " "); // mark done task with X
     }
-    public void setIsDone(){
+
+    public void markAsDone() {
         this.isDone = true;
     }
 
-    public void setNotDone(){
+    public void markAsNotDone() {
         this.isDone = false;
     }
 
-    public String getDescription(){
+    public String getDescription() {
         return this.description;
     }
 
-    public String getTask(){
+    public String getStatusLine() {
         return String.format("[%s] %s", this.getStatusIcon(), this.description);
     }
 }
