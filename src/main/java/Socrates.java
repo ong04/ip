@@ -11,24 +11,35 @@ public class Socrates {
                 "Hello! I'm Socrates.\n" +
                 "What can I do for you? \n";
         String lineBreak = "____________________________________________________________\n";
-        String byeMessage = "\tBye. Hope to see you again soon!\n";
-        System.out.println(banner + lineBreak);
+        String byeMessage = "\t Bye. Hope to see you again soon!\n";
+
+        System.out.print(banner + lineBreak);
         lineBreak = "\t" + lineBreak;
         Scanner scanner = new Scanner(System.in);
-        while(true){
+        String input = scanner.nextLine().strip();
+        String[] list = new String[100];
+        int listIdx = 0;
+        while(!input.equals("bye")){
             // get input
             // strip input
-            String input = scanner.nextLine().strip();
             // check if input is not bye
-            if (input.equals("bye")){
-                System.out.print(lineBreak + byeMessage + lineBreak);
-                break;
+            switch(input) {
+                case "list" -> {
+                    System.out.print(lineBreak);
+                    for(int i = 0 ; i < listIdx; i++){
+                        System.out.printf("\t %d. %s", i+1, list[i]);
+                    }
+                    System.out.print(lineBreak);
+                }
+                // print input
+                default -> {
+                    input = "added: " + input + "\n";
+                    System.out.print(lineBreak + input + lineBreak);
+                    list[listIdx] = input; listIdx++;
+                }
             }
-            // print input
-            else{
-                input = "\t" + input + "\n";
-                System.out.print(lineBreak + input + lineBreak);
-            }
+            input = scanner.nextLine().strip();
         }
+        System.out.print(lineBreak + byeMessage + lineBreak);
     }
 }
