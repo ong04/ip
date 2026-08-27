@@ -1,6 +1,18 @@
 import java.util.Scanner;
 
 public class Socrates {
+    private static String[] formatInput(){
+        Scanner scanner = new Scanner(System.in);
+        String input = scanner.nextLine().strip();
+        String[] formattedInput = input.split(" ");
+        switch (formattedInput[0]) {
+            case "mark", "unmark" -> {}
+            default -> {
+                formattedInput[0] = input;
+            }
+        }
+        return formattedInput;
+    }
     public static void main(String[] args) {
         String banner = "   _____                                          \n" +
                 "  / ____|                                         \n" +
@@ -15,30 +27,44 @@ public class Socrates {
 
         System.out.print(banner + lineBreak);
         lineBreak = "\t" + lineBreak;
-        Scanner scanner = new Scanner(System.in);
-        String input = scanner.nextLine().strip();
-        String[] list = new String[100];
+        String[] input = formatInput();
+        Task[] list = new Task[100];
         int listIdx = 0;
-        while(!input.equals("bye")){
+        while(!input[0].equals("bye")){
             // get input
             // strip input
             // check if input is not bye
-            switch(input) {
+            switch(input[0]) {
                 case "list" -> {
                     System.out.print(lineBreak);
                     for(int i = 0 ; i < listIdx; i++){
-                        System.out.printf("\t %d. %s", i+1, list[i]);
+                        System.out.printf("\t %s. %s\n", i+1, list[i].getTask());
                     }
+                    System.out.print(lineBreak);
+                }
+                case "mark" -> {
+                    int markIdx = Integer.parseInt(input[1]) - 1;
+                    list[markIdx].setIsDone();
+                    System.out.println(lineBreak + "\t Nice! I've marked this task as done:");
+                    System.out.println("\t   " + list[markIdx].getTask());
+                    System.out.print(lineBreak);
+                }
+                case "unmark" -> {
+                    int unmarkIdx = Integer.parseInt(input[1]) - 1;
+                    list[unmarkIdx].setNotDone();
+                    System.out.println(lineBreak + "\t Okay, I've marked this task as not done yet:");
+                    System.out.println("\t   " + list[unmarkIdx].getTask());
                     System.out.print(lineBreak);
                 }
                 // print input
                 default -> {
-                    input = "added: " + input + "\n";
-                    System.out.print(lineBreak + input + lineBreak);
-                    list[listIdx] = input; listIdx++;
+                    Task temp = new Task(input[0]);
+                    input[0] = "\t added: " + input[0] + "\n";
+                    System.out.print(lineBreak + input[0] + lineBreak);
+                    list[listIdx] = temp; listIdx++;
                 }
             }
-            input = scanner.nextLine().strip();
+            input = formatInput();
         }
         System.out.print(lineBreak + byeMessage + lineBreak);
     }
