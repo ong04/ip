@@ -1,3 +1,5 @@
+package socrates;
+
 import java.util.Scanner;
 
 public class Socrates {
