@@ -1,7 +1,6 @@
-import java.util.Scanner;
+package socrates;
 
 public class CommandHandler {
-
     public static String[] formatInput(String s) {
         String[] formattedInput = s.strip().split(" ", 2);
         return formattedInput;
