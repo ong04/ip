@@ -1,16 +1,8 @@
-import java.util.Scanner;
+package socrates;
 
 public class CommandHandler {
-
     public static String[] formatInput(String s) {
-        String[] formattedInput = s.split(" ", 2);
-        switch (formattedInput[0]) {
-            case "list", "mark", "unmark", "todo", "deadline", "event" -> {
-            }
-            default -> {
-                formattedInput[0] = s;
-            }
-        }
+        String[] formattedInput = s.strip().split(" ", 2);
         return formattedInput;
     }
 
@@ -22,15 +14,19 @@ public class CommandHandler {
     }
 
     public static void handleList(Task[] list, int n) {
-        String concatenatedString = "";
-        for (int i = 0; i < n; i++) {
-            concatenatedString = String.format("%s \t %d.%s\n",
-                    concatenatedString,
-                    i + 1,
-                    list[i].getStatusLine()
-            );
+        if (list.length == 0) {
+            formatPrint("List is empty");
+        } else {
+            String concatenatedString = "";
+            for (int i = 0; i < n; i++) {
+                concatenatedString = String.format("%s \t %d.%s\n",
+                        concatenatedString,
+                        i + 1,
+                        list[i].getStatusLine()
+                );
+            }
+            formatPrint(concatenatedString);
         }
-        formatPrint(concatenatedString);
     }
 
     public static void handleMark(Task[] list, String[] input) {
@@ -51,19 +47,26 @@ public class CommandHandler {
         );
     }
 
-    public static void handleToDo(Task[] list, String[] input, int n) {
-        ToDo temp = new ToDo(input[1]);
-        list[n] = temp;
-        n++;
-        formatPrint(String.format("Got it. Ive added this task:\n\t   " +
-                temp.getStatusLine() +
-                "\n\t Now you have %d tasks in the list", n
-        ));
+    public static void handleToDo(Task[] list, String[] input, int n) throws SocratesException {
+        try {
+            ToDo temp = new ToDo(input[1]);
+            list[n] = temp;
+            n++;
+            formatPrint(String.format("Got it. Ive added this task:\n\t   " +
+                    temp.getStatusLine() +
+                    "\n\t Now you have %d tasks in the list", n
+            ));
+        } catch (IndexOutOfBoundsException e) {
+            throw new SocratesException("Task not found, use case: todo {task}");
+        }
     }
 
-    public static void handleDeadlines(Task[] list, String[] input, int n) {
+    public static void handleDeadlines(Task[] list, String[] input, int n) throws SocratesException {
         // format the rest of the string
-        String[] formattedDescription = input[1].split("/by ");
+        String[] formattedDescription = input[1].split(" /by ");
+        if (formattedDescription.length == 1) {
+            throw new SocratesException("Deadline not found, use case: deadline {task} /by {deadline}");
+        }
         Deadlines temp = new Deadlines(formattedDescription[0], formattedDescription[1]);
         list[n] = temp;
         n++;
@@ -73,9 +76,15 @@ public class CommandHandler {
         ));
     }
 
-    public static void handleEvents(Task[] list, String[] input, int n) {
+    public static void handleEvents(Task[] list, String[] input, int n) throws SocratesException {
         String[] formattedDescription = input[1].split(" /from ");
+        if (formattedDescription.length == 1) {
+            throw new SocratesException("Event timings not found, use case: event {event description} /from {start date and time} /to {end date and time}");
+        }
         String[] dateRange = formattedDescription[1].split(" /to ");
+        if (dateRange.length == 1) {
+            throw new SocratesException("Event timings not found, use case: event {event description} /from {start date and time} /to {end date and time}");
+        }
         Events temp = new Events(formattedDescription[0], dateRange[0], dateRange[1]);
         list[n] = temp;
         n++;
@@ -85,14 +94,7 @@ public class CommandHandler {
         ));
     }
 
-    public static void handleDefault(Task[] list, String[] input, int n) {
-        Task temp = new Task(input[0]);
-        String formattedInput = "\t added: " + input[0];
-        formatPrint(formattedInput);
-        list[n] = temp;
-    }
-
-    public static int handleInput(Task[] list, String[] input, int listIdx) {
+    public static int handleInput(Task[] list, String[] input, int listIdx) throws SocratesException {
         switch (input[0]) {
             case "list" -> {
                 handleList(list, listIdx);
@@ -116,8 +118,10 @@ public class CommandHandler {
                 listIdx++;
             }
             default -> {
-                handleDefault(list, input, listIdx);
-                listIdx++;
+                formatPrint(
+                        "I do not know what that means, please follow one of these commands:" +
+                                "\n\t\tlist\n\t\tmark\n\t\tunmark\n\t\ttodo\n\t\tdeadline\n\t\tevent"
+                );
             }
         }
         return listIdx;

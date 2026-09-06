@@ -1,3 +1,5 @@
+package socrates;
+
 import java.util.Scanner;
 
 public class Socrates {
@@ -16,16 +18,18 @@ public class Socrates {
         int listIdx = 0;
         String byeMessage = "\t Bye. Hope to see you again soon!";
         Scanner scanner = new Scanner(System.in);
-        String input = scanner.nextLine();
-        String[] formattedInput = CommandHandler.formatInput(input);
-        while (!formattedInput[0].equals("bye")) {
+        while (true) {
             try {
+                String[] formattedInput = CommandHandler.formatInput(scanner.nextLine());
+                if (formattedInput[0].equals("bye")) {
+                    break;
+                }
                 listIdx = CommandHandler.handleInput(list, formattedInput, listIdx);
+            } catch (SocratesException e) {
+                CommandHandler.formatPrint(e.getMessage());
             } catch (Exception e) {
-                CommandHandler.formatPrint("Check your input");
+                CommandHandler.formatPrint("Error: " + e.getMessage());
             }
-            input = scanner.nextLine();
-            formattedInput = CommandHandler.formatInput(input);
         }
         CommandHandler.formatPrint(byeMessage);
     }
