@@ -1,5 +1,8 @@
 package socrates;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CommandHandler {
     public static String[] formatInput(String s) {
         String[] formattedInput = s.strip().split(" ", 2);
@@ -13,70 +16,69 @@ public class CommandHandler {
         System.out.println(indentedLineBreak);
     }
 
-    public static void handleList(Task[] list, int n) {
-        if (list.length == 0) {
+    public static void handleList(ArrayList<Task> list) {
+        if (list.isEmpty()) {
             formatPrint("List is empty");
         } else {
             String concatenatedString = "";
-            for (int i = 0; i < n; i++) {
+            int n = 0;
+            for (Task i : list) {
                 concatenatedString = String.format("%s \t %d.%s\n",
                         concatenatedString,
-                        i + 1,
-                        list[i].getStatusLine()
+                        ++n,
+                        i.getStatusLine()
                 );
             }
             formatPrint(concatenatedString);
         }
     }
 
-    public static void handleMark(Task[] list, String[] input) {
+    public static void handleMark(ArrayList<Task> list, String[] input) {
         int markIdx = Integer.parseInt(input[1]) - 1;
-        list[markIdx].markAsDone();
+        list.get(markIdx).markAsDone();
         formatPrint("\t Nice! I've marked this task as done:\n" +
                 "\t   " +
-                list[markIdx].getStatusLine()
+                list.get(markIdx).getStatusLine()
         );
     }
 
-    public static void handleUnmark(Task[] list, String[] input) {
+    public static void handleUnmark(ArrayList<Task> list, String[] input) {
         int unmarkIdx = Integer.parseInt(input[1]) - 1;
-        list[unmarkIdx].markAsNotDone();
+        list.get(unmarkIdx).markAsNotDone();
         formatPrint("\t Okay, I've marked this task as not done yet:\n" +
                 "\t   " +
-                list[unmarkIdx].getStatusLine()
+                list.get(unmarkIdx).getStatusLine()
         );
     }
 
-    public static void handleToDo(Task[] list, String[] input, int n) throws SocratesException {
+    public static void handleToDo(ArrayList<Task> list, String[] input) throws SocratesException {
         try {
             ToDo temp = new ToDo(input[1]);
-            list[n] = temp;
-            n++;
+            list.add(temp);
             formatPrint(String.format("Got it. Ive added this task:\n\t   " +
                     temp.getStatusLine() +
-                    "\n\t Now you have %d tasks in the list", n
+                    "\n\t Now you have %d tasks in the list", list.size()
             ));
         } catch (IndexOutOfBoundsException e) {
             throw new SocratesException("Task not found, use case: todo {task}");
         }
     }
 
-    public static void handleDeadlines(Task[] list, String[] input, int n) throws SocratesException {
+    public static void handleDeadlines(ArrayList<Task> list, String[] input) throws SocratesException {
         // format the rest of the string
         String[] formattedDescription = input[1].split(" /by ");
         if (formattedDescription.length == 1) {
             throw new SocratesException("Deadline not found, use case: deadline {task} /by {deadline}");
         }
         Deadlines temp = new Deadlines(formattedDescription[0], formattedDescription[1]);
-        list[n] = temp;
-        n++;
+        list.add(temp);
         formatPrint(String.format("Got it. Ive added this task:\n\t   " +
                 temp.getStatusLine() +
-                "\n\t Now you have %d tasks in the list", n
+                "\n\t Now you have %d tasks in the list", list.size()
         ));
     }
 
-    public static void handleEvents(Task[] list, String[] input, int n) throws SocratesException {
+    public static void handleEvents(ArrayList<Task> list, String[] input) throws SocratesException {
         String[] formattedDescription = input[1].split(" /from ");
         if (formattedDescription.length == 1) {
             throw new SocratesException("Event timings not found, use case: event {event description} /from {start date and time} /to {end date and time}");
@@ -86,18 +88,36 @@ public class CommandHandler {
             throw new SocratesException("Event timings not found, use case: event {event description} /from {start date and time} /to {end date and time}");
         }
         Events temp = new Events(formattedDescription[0], dateRange[0], dateRange[1]);
-        list[n] = temp;
-        n++;
+        list.add(temp);
         formatPrint(String.format("Got it. Ive added this task:\n\t   " +
                 temp.getStatusLine() +
-                "\n\t Now you have %d tasks in the list", n
+                "\n\t Now you have %d tasks in the list", list.size()
         ));
     }
 
-    public static int handleInput(Task[] list, String[] input, int listIdx) throws SocratesException {
+    public static void handleDelete(ArrayList<Task> list, String[] input) throws SocratesException {
+        int n;
+        try {
+            n = Integer.parseInt(input[1]) - 1;
+        } catch (NumberFormatException e) {
+            throw new SocratesException("Use case: delete {index}");
+        }
+        if (n >= list.size() || n < 0) {
+            throw new SocratesException("Index out of bounds");
+        }
+
+        formatPrint("Noted. I've removed this task:\n\t   " +
+                list.get(n).getStatusLine() +
+                "\n\t now you have " +
+                (list.size() - 1) +
+                " tasks in the list");
+        list.remove(n);
+    }
+
+    public static void handleInput(ArrayList<Task> list, String[] input) throws SocratesException {
         switch (input[0]) {
             case "list" -> {
-                handleList(list, listIdx);
+                handleList(list);
             }
             case "mark" -> {
                 handleMark(list, input);
@@ -106,16 +126,16 @@ public class CommandHandler {
                 handleUnmark(list, input);
             }
             case "todo" -> {
-                handleToDo(list, input, listIdx);
-                listIdx++;
+                handleToDo(list, input);
             }
             case "deadline" -> {
-                handleDeadlines(list, input, listIdx);
-                listIdx++;
+                handleDeadlines(list, input);
             }
             case "event" -> {
-                handleEvents(list, input, listIdx);
-                listIdx++;
+                handleEvents(list, input);
+            }
+            case "delete" -> {
+                handleDelete(list, input);
             }
             default -> {
                 formatPrint(
@@ -124,6 +144,5 @@ public class CommandHandler {
                 );
             }
         }
-        return listIdx;
     }
 }
