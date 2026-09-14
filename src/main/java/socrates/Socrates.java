@@ -1,5 +1,6 @@
 package socrates;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Socrates {
@@ -14,8 +15,7 @@ public class Socrates {
                 "What can I do for you? \n" +
                 "____________________________________________________________";
         System.out.println(banner);
-        Task[] list = new Task[100];
-        int listIdx = 0;
+        ArrayList<Task> list = new ArrayList<>();
         String byeMessage = "\t Bye. Hope to see you again soon!";
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -24,7 +24,7 @@ public class Socrates {
                 if (formattedInput[0].equals("bye")) {
                     break;
                 }
-                listIdx = CommandHandler.handleInput(list, formattedInput, listIdx);
+                CommandHandler.handleInput(list, formattedInput);
             } catch (SocratesException e) {
                 CommandHandler.formatPrint(e.getMessage());
             } catch (Exception e) {
