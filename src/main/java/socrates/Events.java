@@ -18,4 +18,8 @@ public class Events extends Task {
                 " to: " +
                 this.end + ")");
     }
+
+    public String toSaveFormat() {
+        return ("E | " + super.toSaveFormat() + " | " + this.start + " | " + this.end);
+    }
 }

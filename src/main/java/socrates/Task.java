@@ -28,4 +28,8 @@ public class Task {
     public String getStatusLine() {
         return String.format("[%s] %s", this.getStatusIcon(), this.description);
     }
+
+    public String toSaveFormat() {
+        return String.format("%s | %s", this.isDone ? "1" : "0", this.description);
+    }
 }

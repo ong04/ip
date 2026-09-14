@@ -11,4 +11,8 @@ public class Deadlines extends Task {
     public String getStatusLine() {
         return String.format("[D]" + super.getStatusLine() + " (by: " + this.deadline + ")");
     }
+
+    public String toSaveFormat() {
+        return ("D | " + super.toSaveFormat() + " | " + this.deadline);
+    }
 }

@@ -51,14 +51,30 @@ public class CommandHandler {
         );
     }
 
+    public static ToDo buildToDo(String description) {
+        return new ToDo(description);
+    }
+
+    public static Deadlines buildDeadlines(String description, String by) {
+        return new Deadlines(description, by);
+    }
+
+    public static Events buildEvents(String descriptions, String from, String to) {
+        return new Events(descriptions, from, to);
+    }
+
+    public static void printAddedTask(Task task, int n) {
+        formatPrint(String.format("Got it. Ive added this task:\n\t   " +
+                task.getStatusLine() +
+                "\n\t Now you have %d tasks in the list", n
+        ));
+    }
+
     public static void handleToDo(ArrayList<Task> list, String[] input) throws SocratesException {
         try {
-            ToDo temp = new ToDo(input[1]);
+            ToDo temp = buildToDo(input[1]);
             list.add(temp);
-            formatPrint(String.format("Got it. Ive added this task:\n\t   " +
-                    temp.getStatusLine() +
-                    "\n\t Now you have %d tasks in the list", list.size()
-            ));
+            printAddedTask(temp, list.size());
         } catch (IndexOutOfBoundsException e) {
             throw new SocratesException("Task not found, use case: todo {task}");
         }
@@ -70,12 +86,9 @@ public class CommandHandler {
         if (formattedDescription.length == 1) {
             throw new SocratesException("Deadline not found, use case: deadline {task} /by {deadline}");
         }
-        Deadlines temp = new Deadlines(formattedDescription[0], formattedDescription[1]);
+        Deadlines temp = buildDeadlines(formattedDescription[0], formattedDescription[1]);
         list.add(temp);
-        formatPrint(String.format("Got it. Ive added this task:\n\t   " +
-                temp.getStatusLine() +
-                "\n\t Now you have %d tasks in the list", list.size()
-        ));
+        printAddedTask(temp, list.size());
     }
 
     public static void handleEvents(ArrayList<Task> list, String[] input) throws SocratesException {
@@ -87,12 +100,9 @@ public class CommandHandler {
         if (dateRange.length == 1) {
             throw new SocratesException("Event timings not found, use case: event {event description} /from {start date and time} /to {end date and time}");
         }
-        Events temp = new Events(formattedDescription[0], dateRange[0], dateRange[1]);
+        Events temp = buildEvents(formattedDescription[0], dateRange[0], dateRange[1]);
         list.add(temp);
-        formatPrint(String.format("Got it. Ive added this task:\n\t   " +
-                temp.getStatusLine() +
-                "\n\t Now you have %d tasks in the list", list.size()
-        ));
+        printAddedTask(temp, list.size());
     }
 
     public static void handleDelete(ArrayList<Task> list, String[] input) throws SocratesException {
