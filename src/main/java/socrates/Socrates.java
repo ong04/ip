@@ -1,9 +1,17 @@
 package socrates;
 
+
+import socrates.storage.FileHandler;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Scanner;
+
 
 public class Socrates {
     public static void main(String[] args) {
+        ArrayList<Task> list = FileHandler.loadFile();
         String banner = "   _____                                          \n" +
                 "  / ____|                                         \n" +
                 " | (___   ___   ___ _ __ __ _| |_ ___  ___\n" +
@@ -14,7 +22,6 @@ public class Socrates {
                 "What can I do for you? \n" +
                 "____________________________________________________________";
         System.out.println(banner);
-        Task[] list = new Task[100];
         int listIdx = 0;
         String byeMessage = "\t Bye. Hope to see you again soon!";
         Scanner scanner = new Scanner(System.in);
@@ -25,6 +32,7 @@ public class Socrates {
                     break;
                 }
                 listIdx = CommandHandler.handleInput(list, formattedInput, listIdx);
+                FileHandler.saveFile(list);
             } catch (SocratesException e) {
                 CommandHandler.formatPrint(e.getMessage());
             } catch (Exception e) {

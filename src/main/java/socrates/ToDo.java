@@ -12,4 +12,8 @@ public class ToDo extends Task {
         return String.format("[T]" + super.getStatusLine());
     }
 
+    public String toSaveFormat() {
+        return ("T | " + super.toSaveFormat());
+    }
+
 }
