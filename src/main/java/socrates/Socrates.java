@@ -22,7 +22,6 @@ public class Socrates {
                 "What can I do for you? \n" +
                 "____________________________________________________________";
         System.out.println(banner);
-        int listIdx = 0;
         String byeMessage = "\t Bye. Hope to see you again soon!";
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -31,7 +30,7 @@ public class Socrates {
                 if (formattedInput[0].equals("bye")) {
                     break;
                 }
-                listIdx = CommandHandler.handleInput(list, formattedInput, listIdx);
+                CommandHandler.handleInput(list, formattedInput);
                 FileHandler.saveFile(list);
             } catch (SocratesException e) {
                 CommandHandler.formatPrint(e.getMessage());
