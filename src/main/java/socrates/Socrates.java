@@ -19,10 +19,10 @@ public class Socrates {
                 "  ____) | (_) | (__| | | (_| | ||  __/\\__ \\\n" +
                 "  |____/ \\___/ \\___|_|  \\__,_|\\__\\___||___/\n" +
                 "Hello! I'm Socrates.\n" +
-                "What can I do for you? \n" +
+                "What shall we examine together today? (say 'help' if you're unsure) \n" +
                 "____________________________________________________________";
         System.out.println(banner);
-        String byeMessage = "\t Bye. Hope to see you again soon!";
+        String byeMessage = "\t Farewell, friend. Remember - the unexamined task list is not worth keeping!";
         Scanner scanner = new Scanner(System.in);
         while (true) {
             try {

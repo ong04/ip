@@ -105,6 +105,19 @@ public class CommandHandler {
         printAddedTask(temp, list.size());
     }
 
+    public static void handleHelp() {
+        formatPrint("As I always say, wisdom begins with knowing what you can ask. Here is what I can help you with:\n" +
+                "\t list - view all your tasks\n" +
+                "\t todo {task} - add a simple task\n" +
+                "\t deadline {task} /by {when} - add a task with a deadline\n" +
+                "\t event {task} /from {start} /to {end} - add an event\n" +
+                "\t mark {index} - mark a task as done\n" +
+                "\t unmark {index} - mark a task as not done\n" +
+                "\t delete {index} - remove a task\n" +
+                "\t bye - end our conversation"
+        );
+    }
+
     public static void handleDelete(ArrayList<Task> list, String[] input) throws SocratesException {
         int n;
         try {
@@ -147,11 +160,11 @@ public class CommandHandler {
             case "delete" -> {
                 handleDelete(list, input);
             }
+            case "help" -> {
+                handleHelp();
+            }
             default -> {
-                formatPrint(
-                        "I do not know what that means, please follow one of these commands:" +
-                                "\n\t\tlist\n\t\tmark\n\t\tunmark\n\t\ttodo\n\t\tdeadline\n\t\tevent"
-                );
+                formatPrint("I confess, I do not understand that, my friend. Use 'help' to see what I can offer.");
             }
         }
     }
