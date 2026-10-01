@@ -2,6 +2,10 @@ package socrates;
 
 import socrates.storage.FileHandler;
 
+/**
+ * Entry point: a command-line task chatbot that loads tasks from disk on
+ * startup, processes commands in a loop, and saves after each change.
+ */
 public class Socrates {
     public static void main(String[] args) {
         Ui ui = new Ui();
