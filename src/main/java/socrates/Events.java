@@ -1,10 +1,18 @@
 package socrates;
 
-public class Events extends Task {
-    private String start;
-    private String end;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-    public Events(String description, String start, String end) {
+/**
+ * A task that spans a start and end date.
+ */
+public class Events extends Task {
+    private static final DateTimeFormatter DISPLAY_FORMAT = DateTimeFormatter.ofPattern("MMM d yyyy");
+
+    private final LocalDate start;
+    private final LocalDate end;
+
+    public Events(String description, LocalDate start, LocalDate end) {
         super(description);
         this.start = start;
         this.end = end;
@@ -14,9 +22,9 @@ public class Events extends Task {
         return String.format("[E]" +
                 super.getStatusLine() +
                 " (from: " +
-                this.start +
+                this.start.format(DISPLAY_FORMAT) +
                 " to: " +
-                this.end + ")");
+                this.end.format(DISPLAY_FORMAT) + ")");
     }
 
     public String toSaveFormat() {

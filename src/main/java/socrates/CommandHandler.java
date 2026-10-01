@@ -1,28 +1,69 @@
 package socrates;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+
+/**
+ * Dispatches user commands to the appropriate task operation, delegating
+ * output to a {@link Ui} and state changes to a {@link TaskList}.
+ */
 public class CommandHandler {
     private final TaskList taskList;
     private final Ui ui;
 
+    /**
+     * Creates a command handler operating on the given task list and UI.
+     *
+     * @param taskList the task list to read from and modify
+     * @param ui the UI to print responses through
+     */
     public CommandHandler(TaskList taskList, Ui ui) {
         this.taskList = taskList;
         this.ui = ui;
     }
 
+    /**
+     * Splits a raw line of user input into a command word and the rest
+     * of the line (if any).
+     *
+     * @param s the raw input line
+     * @return an array of length 1 or 2: the command word, and optionally the remainder
+     */
     public static String[] formatInput(String s) {
         return s.strip().split(" ", 2);
     }
 
+    /**
+     * Creates a {@link ToDo} from its description.
+     */
     public static ToDo buildToDo(String description) {
         return new ToDo(description);
     }
 
-    public static Deadlines buildDeadlines(String description, String by) {
-        return new Deadlines(description, by);
+    /**
+     * Creates a {@link Deadlines} task, parsing the given date string.
+     *
+     * @throws SocratesException if {@code by} is not a valid yyyy-MM-dd date
+     */
+    public static Deadlines buildDeadlines(String description, String by) throws SocratesException {
+        try {
+            return new Deadlines(description, LocalDate.parse(by.trim()));
+        } catch (DateTimeParseException e) {
+            throw new SocratesException("Please give the date as yyyy-MM-dd, e.g. 2026-10-15");
+        }
     }
 
-    public static Events buildEvents(String descriptions, String from, String to) {
-        return new Events(descriptions, from, to);
+    /**
+     * Creates an {@link Events} task, parsing the given start/end date strings.
+     *
+     * @throws SocratesException if {@code from} or {@code to} is not a valid yyyy-MM-dd date
+     */
+    public static Events buildEvents(String descriptions, String from, String to) throws SocratesException {
+        try {
+            return new Events(descriptions, LocalDate.parse(from.trim()), LocalDate.parse(to.trim()));
+        } catch (DateTimeParseException e) {
+            throw new SocratesException("Please give the dates as yyyy-MM-dd, e.g. 2026-10-15");
+        }
     }
 
     private void handleList() {
@@ -147,8 +188,8 @@ public class CommandHandler {
         ui.printMessage("As I always say, wisdom begins with knowing what you can ask. Here is what I can help you with:\n" +
                 "\t list - view all your tasks\n" +
                 "\t todo {task} - add a simple task\n" +
-                "\t deadline {task} /by {when} - add a task with a deadline\n" +
-                "\t event {task} /from {start} /to {end} - add an event\n" +
+                "\t deadline {task} /by {yyyy-MM-dd} - add a task with a deadline\n" +
+                "\t event {task} /from {yyyy-MM-dd} /to {yyyy-MM-dd} - add an event\n" +
                 "\t mark {index} - mark a task as done\n" +
                 "\t unmark {index} - mark a task as not done\n" +
                 "\t delete {index} - remove a task\n" +
@@ -157,6 +198,13 @@ public class CommandHandler {
         );
     }
 
+    /**
+     * Executes the command named by {@code input[0]}, using {@code input[1]}
+     * (if present) as its argument. Prints an unknown-command message if the
+     * command word isn't recognized.
+     *
+     * @throws SocratesException if the command's arguments are invalid
+     */
     public void handleInput(String[] input) throws SocratesException {
         switch (input[0]) {
             case "list" -> handleList();

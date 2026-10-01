@@ -2,6 +2,7 @@ package socrates.storage;
 
 import socrates.Task;
 import socrates.CommandHandler;
+import socrates.SocratesException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,10 +11,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Saves the task list to, and loads it from, a plain-text file on disk.
+ */
 public class FileHandler {
 
     private static final String FILEPATH = "./data/socrates.txt";
 
+    /**
+     * Writes {@code textToAdd} to the save file, creating its parent
+     * directory first if needed, overwriting any existing content.
+     */
     public static void writeToFile(String textToAdd) throws IOException {
         File file = new File(FILEPATH);
         file.getParentFile().mkdirs();
@@ -22,6 +30,10 @@ public class FileHandler {
         fw.close();
     }
 
+    /**
+     * Saves every task in {@code list} to disk, one per line, overwriting
+     * any previous save. Prints a message instead of throwing if saving fails.
+     */
     public static void saveFile(ArrayList<Task> list) {
         String fileString = "";
         for (Task i : list) {
@@ -34,6 +46,10 @@ public class FileHandler {
         }
     }
 
+    /**
+     * Loads the saved task list from disk, returning an empty list if no
+     * save file exists yet. Skips any line that can't be parsed.
+     */
     public static ArrayList<Task> loadFile() {
         ArrayList<Task> tasks = new ArrayList<>();
         File f = new File(FILEPATH);
@@ -45,7 +61,11 @@ public class FileHandler {
             while (s.hasNextLine()) {
                 String line = s.nextLine();
                 if (!line.isBlank()) {
-                    tasks.add(parseLine(line));
+                    try {
+                        tasks.add(parseLine(line));
+                    } catch (SocratesException e) {
+                        System.out.println("Skipping unreadable saved task: " + line);
+                    }
                 }
             }
         } catch (FileNotFoundException e) {
@@ -54,7 +74,7 @@ public class FileHandler {
         return tasks;
     }
 
-    private static Task parseLine(String line) {
+    private static Task parseLine(String line) throws SocratesException {
         String[] parts = line.split(" \\| ");
         boolean isDone = parts[1].equals("1");
         String description = parts[2];
