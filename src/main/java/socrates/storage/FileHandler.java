@@ -15,7 +15,9 @@ public class FileHandler {
     private static final String FILEPATH = "./data/socrates.txt";
 
     public static void writeToFile(String textToAdd) throws IOException {
-        FileWriter fw = new FileWriter(FILEPATH);
+        File file = new File(FILEPATH);
+        file.getParentFile().mkdirs();
+        FileWriter fw = new FileWriter(file);
         fw.write(textToAdd);
         fw.close();
     }
@@ -27,7 +29,6 @@ public class FileHandler {
         }
         try {
             writeToFile(fileString);
-            CommandHandler.formatPrint("Your list has been saved.");
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
