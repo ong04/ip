@@ -1,43 +1,34 @@
 package socrates;
 
-
 import socrates.storage.FileHandler;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Scanner;
-
-
+/**
+ * Entry point: a command-line task chatbot that loads tasks from disk on
+ * startup, processes commands in a loop, and saves after each change.
+ */
 public class Socrates {
     public static void main(String[] args) {
-        ArrayList<Task> list = FileHandler.loadFile();
-        String banner = "   _____                                          \n" +
-                "  / ____|                                         \n" +
-                " | (___   ___   ___ _ __ __ _| |_ ___  ___\n" +
-                "  \\___ \\ / _ \\ / __| '__/ _` | __/ _ \\/ __|\n" +
-                "  ____) | (_) | (__| | | (_| | ||  __/\\__ \\\n" +
-                "  |____/ \\___/ \\___|_|  \\__,_|\\__\\___||___/\n" +
-                "Hello! I'm Socrates.\n" +
-                "What can I do for you? \n" +
-                "____________________________________________________________";
-        System.out.println(banner);
-        String byeMessage = "\t Bye. Hope to see you again soon!";
-        Scanner scanner = new Scanner(System.in);
+        Ui ui = new Ui();
+        TaskList taskList = new TaskList(FileHandler.loadFile());
+        CommandHandler commandHandler = new CommandHandler(taskList, ui);
+
+        ui.printBanner();
+        String byeMessage = "\t Farewell, friend. Remember - the unexamined task list is not worth keeping!";
+
         while (true) {
             try {
-                String[] formattedInput = CommandHandler.formatInput(scanner.nextLine());
+                String[] formattedInput = CommandHandler.formatInput(ui.readCommand());
                 if (formattedInput[0].equals("bye")) {
                     break;
                 }
-                CommandHandler.handleInput(list, formattedInput);
-                FileHandler.saveFile(list);
+                commandHandler.handleInput(formattedInput);
+                FileHandler.saveFile(taskList.asArrayList());
             } catch (SocratesException e) {
-                CommandHandler.formatPrint(e.getMessage());
+                ui.printMessage(e.getMessage());
             } catch (Exception e) {
-                CommandHandler.formatPrint("Error: " + e.getMessage());
+                ui.printMessage("Error: " + e.getMessage());
             }
         }
-        CommandHandler.formatPrint(byeMessage);
+        ui.printMessage(byeMessage);
     }
 }

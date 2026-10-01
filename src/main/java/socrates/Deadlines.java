@@ -1,15 +1,23 @@
 package socrates;
 
-public class Deadlines extends Task {
-    private String deadline;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-    public Deadlines(String description, String deadline) {
+/**
+ * A task that must be completed by a given date.
+ */
+public class Deadlines extends Task {
+    private static final DateTimeFormatter DISPLAY_FORMAT = DateTimeFormatter.ofPattern("MMM d yyyy");
+
+    private final LocalDate deadline;
+
+    public Deadlines(String description, LocalDate deadline) {
         super(description);
         this.deadline = deadline;
     }
 
     public String getStatusLine() {
-        return String.format("[D]" + super.getStatusLine() + " (by: " + this.deadline + ")");
+        return String.format("[D]" + super.getStatusLine() + " (by: " + this.deadline.format(DISPLAY_FORMAT) + ")");
     }
 
     public String toSaveFormat() {
