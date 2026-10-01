@@ -120,6 +120,29 @@ public class CommandHandler {
         taskList.remove(n);
     }
 
+    private void handleFind(String[] input) throws SocratesException {
+        if (input.length < 2 || input[1].isBlank()) {
+            throw new SocratesException("Use case: find {keyword}");
+        }
+        String keyword = input[1].toLowerCase();
+        String concatenatedString = "";
+        int n = 0;
+        for (Task task : taskList.asArrayList()) {
+            if (task.getDescription().toLowerCase().contains(keyword)) {
+                concatenatedString = String.format("%s \t %d.%s\n",
+                        concatenatedString,
+                        ++n,
+                        task.getStatusLine()
+                );
+            }
+        }
+        if (n == 0) {
+            ui.printMessage("No matching tasks found, my friend.");
+        } else {
+            ui.printMessage("Here are the matching tasks in your list:\n" + concatenatedString);
+        }
+    }
+
     private void handleHelp() {
         ui.printMessage("As I always say, wisdom begins with knowing what you can ask. Here is what I can help you with:\n" +
                 "\t list - view all your tasks\n" +
@@ -129,6 +152,7 @@ public class CommandHandler {
                 "\t mark {index} - mark a task as done\n" +
                 "\t unmark {index} - mark a task as not done\n" +
                 "\t delete {index} - remove a task\n" +
+                "\t find {keyword} - find tasks matching a keyword\n" +
                 "\t bye - end our conversation"
         );
     }
@@ -142,6 +166,7 @@ public class CommandHandler {
             case "deadline" -> handleDeadlines(input);
             case "event" -> handleEvents(input);
             case "delete" -> handleDelete(input);
+            case "find" -> handleFind(input);
             case "help" -> handleHelp();
             default -> ui.printMessage("I confess, I do not understand that, my friend. Use 'help' to see what I can offer.");
         }
